@@ -4,12 +4,14 @@
 import requests 
 import math
 import keys 
-
+import time 
+import os
 # Grabs API key from keys.py
 APIKEY = keys.APIKEY
 
 # method that takes in weather in Kelvin and city name, convert temp to F and printout description of the weather for desired city 
 def printout(weather,name):
+    os.system("clear")
     # converts Kelvin to Farenheit and rounds up
     temp = math.ceil(int(weather['main']['temp'] - 273.13) * 1.8 + 32)
     # conditions 
@@ -28,7 +30,7 @@ def printout(weather,name):
 def zipcode():
     try:
         # Takes in input from user and stores it in a variable
-        ZIPCODE = input("Please enter the zipcode for weather at that location!\n>")
+        ZIPCODE = input("Please enter the zipcode for weather at desired location!\n>")
 
         # Zipcode URL to get Lat and Lon
         URL = f"http://api.openweathermap.org/geo/1.0/zip?zip={ZIPCODE}&appid={APIKEY}"
@@ -54,11 +56,16 @@ def zipcode():
 # method that searches weather by city, state, and country   
 def default():
     try:
+
         # takes in input from user for city, state, country
         city = input("Please enter a city\n>")
         state = input("Please enter a state\n>")
         country = input("Please enter a country\n>")
-
+        if city == "" or state == "":
+            print("Please enter a valid city, state, country")
+            city = input("Please enter a city\n>")
+            state = input("Please enter a state\n>")
+            country = input("Please enter a country\n>")
         # get requests to grab the lat and lon then convert to json
         url = f"http://api.openweathermap.org/geo/1.0/direct?q={city},{state},{country}&limit={5}&appid={APIKEY}"
         exact = requests.get(url).json()
@@ -75,13 +82,27 @@ def default():
         # Catches Error
         print("Error in city, state, or country")
 
+# method to run the app
+def main():
+    choice = input("Press '0' to look up by zipcode or press '1' to look up by city, state, and country\n>")
+    if choice == "0":
+        zipcode()
+    elif choice == "1":
+        default()
+    else:
+        print("Please press 0 or 1!!!")
+    prompt = input("Do you wish to continue?\n>").lower()
 
-print("Welcome to Wonders Weather Teller")
-print("=============================")
-choice = input("Press '0' to look up by zipcode or press '1' to look up by city, state, and country\n>")
-if choice == "0":
-    zipcode()
-elif choice == "1":
-    default()
-else:
-    print("Please press 0 or 1!!!")
+    if prompt == 'yes' or prompt =='ya' or prompt =='yup' or prompt == 'y':
+        os.system("clear")
+        main()
+    else:
+        print("Exiting application ......")
+
+
+
+if __name__ == "__main__":
+    print("Welcome to Wonders Weather Teller")
+    print("=============================")
+    time.sleep(1)
+    main()
